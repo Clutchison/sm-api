@@ -5,6 +5,11 @@ import * as dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import mongoose from "mongoose";
+import { itemsRouter } from "./items/items.router";
+import { errorHandler } from "./middleware/error.middleware";
+import { notFoundHandler } from "./middleware/not-found.middleware";
+import { blockRouter } from "./blocks/block.router";
 
 dotenv.config();
 
@@ -12,10 +17,11 @@ dotenv.config();
  * App Variables
  */
 if (!process.env.PORT) {
-   process.exit(1);
+  process.exit(1);
 }
 
 const PORT: number = parseInt(process.env.PORT as string, 10);
+const DB_URL: string = process.env.DB_URL as string;
 
 const app = express();
 
@@ -28,10 +34,19 @@ app.use(express.json());
 
 // Routers
 app.use('/api/menu/items', itemsRouter);
+app.use('/api/block', blockRouter);
 
 // Error handling
 app.use(errorHandler); // Handle errors
 app.use(notFoundHandler); // Handle 404s
+
+/**
+ * Datasource Connection
+ */
+mongoose.set('strictQuery', false);
+mongoose.connect(DB_URL)
+  .then(() => console.log('Connected to database.'))
+  .catch((err => console.log(err)));
 
 /**
  * Server Activation
