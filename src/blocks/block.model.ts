@@ -29,6 +29,11 @@ const blockSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+}, { optimisticConcurrency: true });
+
+blockSchema.pre('save', function (next) {
+  this.increment();
+  return next();
 });
 
 blockSchema.statics.build = (attr: BlockInterface) => { return new Block(attr) };
