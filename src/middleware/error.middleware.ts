@@ -3,9 +3,9 @@ import { Request, Response, NextFunction } from "express";
 
 export const errorHandler = (
   error: HttpException,
-  request: Request,
+  _: Request,
   response: Response,
-  next: NextFunction
+  __: NextFunction
 ) => {
   const status = error.statusCode || error.status || 500;
   response.status(status).send(error);

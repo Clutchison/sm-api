@@ -3,9 +3,9 @@ import { Request, Response, NextFunction } from "express";
 const NOT_FOUND = 'Resource not found';
 
 export const notFoundHandler = (
-  request: Request,
+  _: Request,
   response: Response,
-  next: NextFunction
+  __: NextFunction
 ) => {
   response.status(404).send(NOT_FOUND);
 };

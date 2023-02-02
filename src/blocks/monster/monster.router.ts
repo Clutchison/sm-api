@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express';
 import { Monster } from './monster.model';
-import { extractMessage, send404ForResource } from '../../common/util';
 import mongoose from 'mongoose';
+import { send404ForResource } from '../../common/util/send-404';
+import { extractMessage } from '../../common/util/extract-message';
 
 export const monsterRouter = express.Router();
 const idIsValid = mongoose.Types.ObjectId.isValid;

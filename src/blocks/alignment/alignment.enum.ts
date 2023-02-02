@@ -1,6 +1,6 @@
 import { Order } from './order.enum';
 import { Morality } from './morality.enum';
-import { ObjectValues } from '../../common/util';
+import { ObjectValues } from '../../common/util/object-values';
 
 const ALIGNMENT = {
   LAWFUL_GOOD: 'lawful good',

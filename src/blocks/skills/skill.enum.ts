@@ -1,4 +1,4 @@
-import { ObjectValues } from '../../common/util';
+import { ObjectValues } from '../../common/util/object-values';
 import { Stat } from '../stats/stat.enum';
 
 const SKILL = {

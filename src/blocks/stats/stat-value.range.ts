@@ -1,4 +1,4 @@
-import { Ran } from '../../common/util';
+import { Ran } from '../../common/util/range';
 
 export type StatValue = Ran<31>;
 

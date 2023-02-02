@@ -1,4 +1,4 @@
-import { ObjectValues } from '../../common/util';
+import { ObjectValues } from '../../common/util/object-values';
 
 const MORALITY = {
   GOOD: 'good',
