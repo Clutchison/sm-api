@@ -1,6 +1,6 @@
 import { ObjectValues } from '../../common/util/object-values';
 
-const CHALLENGE_RATING = {
+export const CHALLENGE_RATING = {
   ZERO: '0',
   ONE_EIGTH: '1/8',
   ONE_FOURTH: '1/4',

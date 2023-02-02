@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { Monster } from './monster.model';
+import { Monster, MonsterInterface } from './monster.model';
 import mongoose from 'mongoose';
 import { send404ForResource } from '../../common/util/send-404';
 import { extractMessage } from '../../common/util/extract-message';
@@ -34,8 +34,8 @@ monsterRouter.get("/:id", async (req: Request, res: Response) => {
 // POST Monster
 monsterRouter.post("/", async (req: Request, res: Response) => {
   try {
-    const { name, description, cr } = req.body;
-    const monster = Monster.build({ name, description, cr });
+    const newMonster: MonsterInterface = req.body;
+    const monster = Monster.build(newMonster);
     await monster.save();
     res.status(201).json(monster);
   } catch (e: unknown) {
