@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { Size } from "../size.enum";
 import { Alignment } from "../alignment/alignment.enum";
 import { Stats } from '../stats/stats.model';
+import { Skill } from '../skills/skill.enum';
+import { ChallengeRating } from './challenge-rating.enum';
 
 // todo: Require appropriate properties
 export interface MonsterInterface {
@@ -13,12 +15,12 @@ export interface MonsterInterface {
   hpCurrent?: number;
   speed?: number;
   stats?: Stats;
-  // skills?: Skill[];
+  skills?: Skill[];
   vulnerablities?: string;
   immunities?: string;
   // senses?: SenseRange[];
   description: string;
-  cr: number;
+  cr: ChallengeRating;
 }
 
 interface MonsterDoc extends mongoose.Document {

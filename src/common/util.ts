@@ -15,3 +15,6 @@ export const send404ForResource = (resourceName: string) =>
     res.status(404).send(resourceName + ' not found with id: ' + id);
 
 export type ObjectValues<T> = T[keyof T];
+
+type _Range<T extends number, R extends unknown[]> = R['length'] extends T ? R[number] : _Range<T, [R['length'], ...R]>;
+export type Ran<T extends number> = number extends T ? number : _Range<T, []>;

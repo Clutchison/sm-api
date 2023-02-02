@@ -1,4 +1,4 @@
-import { StatValue, parseStatValue } from '../stat-value.enum';
+import { StatValue, parseStatValue } from '../stat-value.range';
 
 
 describe('parseStatValue', () => {
