@@ -12,8 +12,14 @@ export class MonsterService {
     return savedMonser.save();
   }
 
-  public static update = async (updatedMonser: MonsterInterface): Promise<MonsterDocWithId> => {
+  public static throwError = () => {
+    return new Promise(() => {
+      throw new Error("Error in promise");
+    });
+  }
 
+  public static update = async (updatedMonser: MonsterInterface): Promise<MonsterDocWithId | null> => {
+    return null;
   }
 
   public static getById = async (id: string): Promise<MonsterDocWithId | null> => {

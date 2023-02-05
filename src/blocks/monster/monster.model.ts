@@ -8,6 +8,7 @@ import { SenseRanges } from '../sense';
 import { SpeedConfig } from '../speed';
 import { ACProps } from '../ac';
 import { HPProps } from '../hp';
+import { String, Record, Number, Union, Literal, Constraint } from 'runtypes';
 
 // todo: Require appropriate properties
 export type MonsterInterface = {
@@ -28,6 +29,11 @@ export type MonsterInterface = {
   languages?: string[];
   cr?: ChallengeRating;
 }
+
+const MonsterRecord = Record({
+  name: String,
+  hpMax: Number.withConstraint(n => n >= -700 && n <= 700)
+});
 
 export interface MonsterDoc extends mongoose.Document, MonsterInterface { }
 
@@ -115,6 +121,15 @@ monsterSchema.pre('save', function (next) {
   return next();
 });
 
+// monsterSchema.pre('validate', function (next) {
+//   this;
+//   if(this.hpCurrent > this.hpMax?) {
+
+//   }
+// });
+
 monsterSchema.statics.build = (attr: MonsterInterface) => { return new Monster(attr) };
 
 export const Monster = mongoose.model<MonsterDoc, MonsterModelInterface>('monster', monsterSchema);
+
+// Monster.record = MonsterRecord;
