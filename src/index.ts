@@ -8,7 +8,7 @@ import helmet from "helmet";
 import mongoose from "mongoose";
 import { errorHandler } from "./middleware/error.middleware";
 import { notFoundHandler } from "./middleware/not-found.middleware";
-import { monsterRouter } from "./blocks/monster/monster.router";
+import { MonsterRouter } from "./blocks/monster/monster.router";
 
 dotenv.config();
 
@@ -32,7 +32,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routers
-app.use('/api/block', monsterRouter);
+app.use('/api/block', MonsterRouter.instance().router);
 
 // Error handling
 app.use(errorHandler); // Handle errors

@@ -1,104 +1,107 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import { Error as MongooseError } from 'mongoose';
 import { MongoError } from 'mongodb';
-import { send404ForResource } from '../../common/util/send-404';
-import { extractMessage } from '../../common/util/extract-message';
-import { MonsterService } from './monster.service';
+import monsterService from './monster.service';
 import { ValidationError as RunTypesError } from 'runtypes';
-import { Monster } from './monster.model';
+import 'express-async-errors';
+import { BaseRouter } from '../../common/base-router';
+import InvalIdIdError from '../../common/InvalidIdError';
 
-export const monsterRouter = express.Router();
-const send404 = send404ForResource('Monster');
+export class MonsterRouter extends BaseRouter {
 
-// GET items
-monsterRouter.get("/", async (_, res: Response) => {
-  try {
-    const monsters = await MonsterService.getAll();
-    res.status(200).send(monsters);
-  } catch (e: unknown) {
-    res.status(500).send(extractMessage(e));
-  }
-});
+  public router: Router;
+  private static _instance?: MonsterRouter;
 
-// GET items/:id
-monsterRouter.get("/:id", async (req: Request, res: Response) => {
-  try {
-    const erz = MonsterService.throwError();
-    return res.status(200).send(erz);
-    // const id: string | undefined = req.params.id;
-    // if (id === undefined) return send404(id, res);
-    // const monster = await MonsterService.getById(id);
-    // if (monster) return res.status(200).send(monster);
-    // else return send404(id, res);
-  } catch (e: unknown) {
-    res.status(500).send(extractMessage(e));
-  }
-});
-
-// POST Monster
-monsterRouter.post("/", async (req: Request, res: Response) => {
-  try {
-    const monster = await MonsterService.create(req.body);
-    return res.status(201).json(monster);
-  } catch (e: unknown) {
-    if (e instanceof RunTypesError) {
-      return res.status(400).json(errorBody(
-        'Error parsing request to Monster',
-        e.details));
-    } else if (e instanceof MongooseError.ValidationError) {
-      return res.status(400).json(errorBody(
-        'Error saving new Monster',
-        Object.values(e.errors).map((err) => err.message)));
-    } else if ((e as MongoError).code === 11000) {
-      return res.status(400).json(errorBody(
-        'A user with this this unique key already exists!'
-      ));
+  public static instance(): MonsterRouter {
+    if (!MonsterRouter._instance) {
+      MonsterRouter._instance = new MonsterRouter();
+      return MonsterRouter._instance;
     }
-    res.status(500).json(errorBody('Internal server error', e));
+    return MonsterRouter._instance as MonsterRouter;
   }
-});
 
-// // PUT items/:id
-// monsterRouter.put("/:id", async (req: Request, res: Response) => {
-//   try {
-//     const id: string | undefined = req.params.id;
-//     if (id === undefined) return send404(id, res);
-//     const updatedMonser = req.body;
-//     let existingMonster = await Monster.findById(id);
-//     if (existingMonster) {
-//       existingMonster.name = name ?? existingMonster.name;
-//       existingMonster.description = description ?? existingMonster.description;
-//       existingMonster.cr = cr ?? existingMonster.cr;
-//       await existingMonster.save().then(savedMonster => res.status(200).json(savedMonster));
-//     } else {
-//       return send404(id, res);
-//     }
-//   } catch (e: unknown) {
-//     res.status(500).send(extractMessage(e));
-//   }
-// });
+  private constructor() {
+    super('Monster');
+    this.router = this.init();
+  }
 
-// // DELETE items/:id
-// monsterRouter.delete("/:id", async (req: Request, res: Response) => {
-//   try {
-//     const id: string | undefined = req.params.id;
-//     if (!id || !idIsValid(id)) return send404(id, res);
-//     const monster = await Monster.findById(id);
-//     if (monster) {
-//       monster.delete()
-//         .then(res.sendStatus(204));
-//     } else {
-//       return send404(id, res);
-//     }
-//   } catch (e: unknown) {
-//     res.status(500).send(extractMessage(e));
-//   }
-// });
+  private init = (): Router => {
+    const router = express.Router();
+    // GET items
+    router.get("/", async (_, res: Response) => {
+      monsterService.getAll()
+        .then(monsters => res.status(200).send(monsters))
+        .catch((e: unknown) => MonsterRouter.send500(res, e));
+    });
 
-const errorBody = (message: string, details?: any): { success: false, message: string, details?: any } => {
-  const body = {
-    success: false,
-    message: message
-  } as const;
-  return details ? { ...body, details } : body;
+    // GET items/:id
+    router.get("/:id", async (req: Request, res: Response) => {
+      const id = req.params.id;
+      monsterService.getById(id)
+        .then((monster: any | null) => monster ?
+          res.status(200).send(monster) :
+          this.send404(res, id))
+        .catch((e: unknown) => {
+          if (e instanceof InvalIdIdError) {
+            this.send404(res, id);
+          } else {
+            MonsterRouter.send500(res, e)
+          }
+        });
+    });
+
+    // POST Monster
+    router.post("/", async (req: Request, res: Response) => {
+      monsterService.create(req.body)
+        .then(monster => res.status(201).json(monster))
+        .catch((e: unknown) => {
+          if (e instanceof RunTypesError) {
+            MonsterRouter.sendException(res, 400,
+              'Error parsing request body', e.details);
+          } else if (e instanceof MongooseError.ValidationError) {
+            MonsterRouter.sendException(res, 400,
+              'Error saving new Monster', Object.values(e.errors).map((err) => err.message));
+          } else if ((e as MongoError).code === 11000) {
+            MonsterRouter.sendException(res, 400,
+              'A Monster with this unique key already exists');
+          } else {
+            return MonsterRouter.send500(res, e);
+          }
+        });
+    });
+
+    // PUT items/:id
+    router.put("/:id", async (req: Request, res: Response) => {
+      const id: string | undefined = req.params.id;
+      monsterService.update(req.body, id)
+        .then(monster => monster ?
+          res.status(200).send(monster) :
+          this.send404(res, id))
+        .catch((e: unknown) => {
+          if (e instanceof InvalIdIdError) {
+            this.send404(res, id);
+          } else {
+            MonsterRouter.send500(res, e)
+          }
+        });
+    });
+
+    // DELETE items/:id
+    router.delete("/:id", async (req: Request, res: Response) => {
+      const id: string | undefined = req.params.id;
+      monsterService.deleteById(id)
+        .then(monster => monster ?
+          res.status(204).send() :
+          this.send404(res, id))
+        .catch((e: unknown) => {
+          if (e instanceof InvalIdIdError) {
+            this.send404(res, id);
+          } else {
+            MonsterRouter.send500(res, e instanceof Error ? e.message : undefined)
+          }
+        })
+    });
+
+    return router;
+  }
 }
