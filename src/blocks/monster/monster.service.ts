@@ -1,29 +1,29 @@
 import mongoose, { Types } from 'mongoose';
-import { Monster, MonsterDoc, MonsterInterface } from './monster.model';
+import { MonsterModel, MonsterDoc, Monster } from './monster.model';
 import InvalIdIdError from '../../common/errs/InvalidIdError';
 
 type MonsterDocWithId = (MonsterDoc & {
   _id: Types.ObjectId;
 });
 
-const create = async (newMonster: MonsterInterface): Promise<MonsterDoc> => {
-  const checked = Monster.record.check(newMonster);
-  const built = Monster.build(checked);
+const create = async (newMonster: Monster): Promise<MonsterDoc> => {
+  // const checked = MonsterModel.record.check(newMonster);
+  const built = MonsterModel.build(newMonster);
   const saved = built.save();
   return saved;
   // return Monster.build(Monster.record.check(newMonster)).save();
 }
 
 const getAll = async (): Promise<MonsterDocWithId[]> => {
-  return Monster.find();
+  return MonsterModel.find();
 }
 
 const getById = async (id: string | undefined): Promise<MonsterDocWithId | null> => {
   if (!idIsValid(id || '')) throw new InvalIdIdError(id);
-  return Monster.findById(id);
+  return MonsterModel.findById(id);
 }
 
-const update = async (updatedMonster: MonsterInterface, id: string | undefined):
+const update = async (updatedMonster: Monster, id: string | undefined):
   Promise<MonsterDocWithId | null> => {
   const existingMonster = await getById(id);
   if (!existingMonster) return null;

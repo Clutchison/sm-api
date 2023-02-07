@@ -7,6 +7,6 @@ export const errorHandler = (
   response: Response,
   __: NextFunction
 ) => {
-  const status = error.statusCode || error.status || 500;
+  const status = error.statusCode || 500;
   response.status(status).send(error);
 };

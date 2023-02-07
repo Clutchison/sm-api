@@ -1,18 +1,19 @@
 import mongoose from "mongoose";
 import { SIZE, Size } from "../size";
 import { ALIGNMENT, Alignment } from "../alignment/alignment.enum";
-import { Stats } from '../stats/stats.model';
+import { statsSchema } from '../stats/stats.schema';
 import { SKILL, Skill } from '../skill';
 import { CHALLENGE_RATING, ChallengeRating } from './challenge-rating';
-import { SenseRanges } from '../sense';
+import { SenseRanges, senseRangesSchema } from '../sense';
 import { SpeedConfig } from '../speed';
 import { ACProps } from '../ac';
 import { HPProps } from '../hp';
 import { MonsterRecord } from './monster.record';
 import { InvalidMonsterError } from '../errs/invalid-monster-error';
+import { Stats } from '../stats/stats';
 
 // todo: Require appropriate properties
-export type MonsterInterface = {
+export type Monster = {
   name: string;
   description?: string;
   size?: Size;
@@ -33,13 +34,13 @@ export type MonsterInterface = {
   cr?: ChallengeRating;
 }
 
-export interface MonsterDoc extends mongoose.Document, MonsterInterface {
+export interface MonsterDoc extends mongoose.Document, Monster {
   _doc: MonsterDoc;
 }
 
 interface MonsterModelInterface extends mongoose.Model<MonsterDoc> {
   record: typeof MonsterRecord;
-  build(monster: MonsterInterface): MonsterDoc;
+  build(monster: Monster): MonsterDoc;
 }
 
 const monsterSchema = new mongoose.Schema({
@@ -78,7 +79,6 @@ const monsterSchema = new mongoose.Schema({
     max: HPProps.max,
     required: true,
   },
-  // todo: validate current hp less than max hp
   hpCurrent: {
     type: Number,
     min: HPProps.min,
@@ -97,7 +97,10 @@ const monsterSchema = new mongoose.Schema({
     max: SpeedConfig.max,
     required: false,
   },
-  // todo: Stats
+  stats: {
+    type: statsSchema,
+    required: true
+  },
   skills: {
     type: [String],
     enum: Object.values(SKILL),
@@ -115,7 +118,10 @@ const monsterSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  // todo: Senses
+  senses: {
+    type: senseRangesSchema,
+    required: false,
+  },
   languages: {
     type: [String],
     required: false,
@@ -129,6 +135,8 @@ const monsterSchema = new mongoose.Schema({
 
 monsterSchema.pre('save', function (next) {
   this.increment();
+  this.languages = [...new Set(this.languages)];
+  this.skills = [...new Set(this.skills)];
   return next();
 });
 
@@ -142,6 +150,6 @@ monsterSchema.pre('validate', function (next) {
   }
 });
 
-monsterSchema.statics.build = (attr: MonsterInterface) => { return new Monster(attr) };
-export const Monster = mongoose.model<MonsterDoc, MonsterModelInterface>('monster', monsterSchema);
-Monster.record = MonsterRecord;
+monsterSchema.statics.build = (attr: Monster) => { return new MonsterModel(attr) };
+export const MonsterModel = mongoose.model<MonsterDoc, MonsterModelInterface>('monster', monsterSchema);
+MonsterModel.record = MonsterRecord;

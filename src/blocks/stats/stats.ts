@@ -10,3 +10,10 @@ const STAT = {
 } as const;
 
 export type Stat = ObjectValues<typeof STAT>;
+
+export type Stats = { [key in Stat]: number }
+
+export const STATS_PROPS = {
+  min: 0,
+  max: 30,
+} as const;

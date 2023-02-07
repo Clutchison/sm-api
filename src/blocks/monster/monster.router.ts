@@ -23,10 +23,10 @@ export class MonsterRouter extends BaseRouter {
 
   private constructor() {
     super('Monster');
-    this.router = this.init();
+    this.router = this.initRouter();
   }
 
-  private init = (): Router => {
+  private initRouter = (): Router => {
     const router = express.Router();
     // GET items
     router.get("/", async (_, res: Response) => {

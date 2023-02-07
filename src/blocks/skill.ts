@@ -1,5 +1,5 @@
 import { ObjectValues } from '../common/util/object-values';
-import { Stat } from './stats/stat.enum';
+import { Stat } from './stats/stats';
 
 export const SKILL = {
   ACROBATICS: 'acrobatics',
