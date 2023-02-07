@@ -1,0 +1,23 @@
+{
+  "name": "new Monster",
+  "description?": "This is a description",
+  "size?": "medium",
+  "type?": "fiend",
+  "alignment?": "lawful good",
+  "ac?": 15,
+  "hpMax": 50,
+  "hpCurrent?": 50,
+  "speed?": 30,
+  "skills?": [
+    "acrobatics",
+    "perception"
+  ],
+  "vulnerablities?": "fire, frost",
+  "resistances": "slashing, piercing, crushing from nonmagical attacks",
+  "immunities?": "acid",
+  "languages?": [
+    "elven",
+    "commmon"
+  ],
+  "cr?": 12
+}

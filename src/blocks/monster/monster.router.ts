@@ -5,7 +5,8 @@ import monsterService from './monster.service';
 import { ValidationError as RunTypesError } from 'runtypes';
 import 'express-async-errors';
 import { BaseRouter } from '../../common/base-router';
-import InvalIdIdError from '../../common/InvalidIdError';
+import InvalIdIdError from '../../common/errs/InvalidIdError';
+import { InvalidMonsterError } from '../errs/invalid-monster-error';
 
 export class MonsterRouter extends BaseRouter {
 
@@ -31,7 +32,7 @@ export class MonsterRouter extends BaseRouter {
     router.get("/", async (_, res: Response) => {
       monsterService.getAll()
         .then(monsters => res.status(200).send(monsters))
-        .catch((e: unknown) => MonsterRouter.send500(res, e));
+        .catch((e: unknown) => MonsterRouter.send500(res, e instanceof Error ? e.message : undefined));
     });
 
     // GET items/:id
@@ -45,7 +46,7 @@ export class MonsterRouter extends BaseRouter {
           if (e instanceof InvalIdIdError) {
             this.send404(res, id);
           } else {
-            MonsterRouter.send500(res, e)
+            MonsterRouter.send500(res, e instanceof Error ? e.message : undefined)
           }
         });
     });
@@ -61,11 +62,14 @@ export class MonsterRouter extends BaseRouter {
           } else if (e instanceof MongooseError.ValidationError) {
             MonsterRouter.sendException(res, 400,
               'Error saving new Monster', Object.values(e.errors).map((err) => err.message));
+          } else if (e instanceof InvalidMonsterError) {
+            MonsterRouter.sendException(res, 400,
+              'Error saving new Monster', e.details);
           } else if ((e as MongoError).code === 11000) {
             MonsterRouter.sendException(res, 400,
               'A Monster with this unique key already exists');
           } else {
-            return MonsterRouter.send500(res, e);
+            MonsterRouter.send500(res, e instanceof Error ? e.message : undefined);
           }
         });
     });
@@ -81,7 +85,7 @@ export class MonsterRouter extends BaseRouter {
           if (e instanceof InvalIdIdError) {
             this.send404(res, id);
           } else {
-            MonsterRouter.send500(res, e)
+            MonsterRouter.send500(res, e instanceof Error ? e.message : undefined);
           }
         });
     });

@@ -1,21 +1,22 @@
 export default class HttpException extends Error {
   public statusCode?: number;
-  public message: string;
+  public error: Error | String;
   public details?: {};
 
-  constructor(statusCode: number, message: string, details?: any) {
-    super(message);
+  constructor(statusCode: number, error: Error | string, details?: any) {
+    super(error instanceof Error ? error.message : error);
 
     this.statusCode = statusCode;
-    this.message = message;
+    this.error = error;
     this.details = details;
   }
 
   public toJson() {
     return {
       statusCode: this.statusCode,
-      message: this.message,
+      error: this.error instanceof Error ? this.error.name : this.error,
+      message: this.error instanceof Error ? this.error.message : undefined,
       details: this.details,
-    }
+    };
   }
 }

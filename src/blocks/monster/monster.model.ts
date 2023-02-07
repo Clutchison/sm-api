@@ -9,6 +9,7 @@ import { SpeedConfig } from '../speed';
 import { ACProps } from '../ac';
 import { HPProps } from '../hp';
 import { MonsterRecord } from './monster.record';
+import { InvalidMonsterError } from '../errs/invalid-monster-error';
 
 // todo: Require appropriate properties
 export type MonsterInterface = {
@@ -19,18 +20,20 @@ export type MonsterInterface = {
   alignment?: Alignment;
   ac?: number;
   hpMax: number;
-  hpCurrent?: number;
+  hpCurrent: number;
+  hpTemp?: number;
   speed?: number;
   stats?: Stats;
   skills?: Skill[];
   vulnerablities?: string;
+  resistances?: string;
   immunities?: string;
   senses?: SenseRanges;
   languages?: string[];
   cr?: ChallengeRating;
 }
 
-export interface MonsterDoc extends mongoose.Document, MonsterInterface { 
+export interface MonsterDoc extends mongoose.Document, MonsterInterface {
   _doc: MonsterDoc;
 }
 
@@ -73,12 +76,18 @@ const monsterSchema = new mongoose.Schema({
     type: Number,
     min: 0,
     max: HPProps.max,
-    required: false,
+    required: true,
   },
   // todo: validate current hp less than max hp
   hpCurrent: {
     type: Number,
     min: HPProps.min,
+    max: HPProps.max,
+    required: true,
+  },
+  hpTemp: {
+    type: Number,
+    min: 0,
     max: HPProps.max,
     required: false,
   },
@@ -89,12 +98,16 @@ const monsterSchema = new mongoose.Schema({
     required: false,
   },
   // todo: Stats
-  skill: {
+  skills: {
     type: [String],
     enum: Object.values(SKILL),
     required: false,
   },
   vulnerabilities: {
+    type: String,
+    required: false,
+  },
+  resistances: {
     type: String,
     required: false,
   },
@@ -119,12 +132,15 @@ monsterSchema.pre('save', function (next) {
   return next();
 });
 
-// monsterSchema.pre('validate', function (next) {
-//   this;
-//   if(this.hpCurrent > this.hpMax?) {
-
-//   }
-// });
+monsterSchema.pre('validate', function (next) {
+  if (this.hpCurrent > this.hpMax) {
+    next(new InvalidMonsterError(
+      'Current HP (' + this.hpCurrent + ')' +
+      ' cannot be higher than Max HP (' + this.hpMax + ')'));
+  } else {
+    next();
+  }
+});
 
 monsterSchema.statics.build = (attr: MonsterInterface) => { return new Monster(attr) };
 export const Monster = mongoose.model<MonsterDoc, MonsterModelInterface>('monster', monsterSchema);
