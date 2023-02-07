@@ -1,3 +1,8 @@
+/**
+ * Tests Alignment.enum.ts
+ * 
+ * @group unit/blocks/alignment
+ */
 import { parseAlignment } from '../alignment.enum'
 
 
