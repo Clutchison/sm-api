@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { SIZE, Size } from "../size";
+import { SIZE, Size } from "../size/size";
 import { ALIGNMENT, Alignment } from "../alignment/alignment.enum";
 import { statsSchema } from '../stats/stats.schema';
 import { SKILL, Skill } from '../skill';
-import { CHALLENGE_RATING, ChallengeRating } from './challenge-rating';
+import { CHALLENGE_RATING, ChallengeRating } from './challenge-rating/challenge-rating';
 import { SenseRanges, senseRangesSchema } from '../sense';
 import { SpeedConfig } from '../speed';
 import { ACProps } from '../ac';

@@ -1,4 +1,4 @@
-import { ObjectValues } from '../../common/util/object-values';
+import { ObjectValues } from '../../../common/util/object-values';
 
 export const CHALLENGE_RATING = {
   ZERO: '0',

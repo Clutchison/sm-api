@@ -1,4 +1,4 @@
-import { ObjectValues } from '../common/util/object-values';
+import { ObjectValues } from '../../common/util/object-values';
 
 export const SIZE = {
   TINY: 'tiny',
