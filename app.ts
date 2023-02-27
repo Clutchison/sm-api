@@ -7,6 +7,7 @@ import { notFoundHandler } from './src/middleware/not-found.middleware';
 import { ChallengeRatingRouter } from './src/blocks/monster/challenge-rating/challenge-rating.router';
 import { SizeRouter } from './src/blocks/size/size-router';
 import { AlignmentRouter } from './src/blocks/alignment/alignment-router';
+import { FlashRouter } from './src/namia/flash/flash-router';
 
 export const app = express();
 
@@ -16,10 +17,14 @@ app.use(express.json());
 app.use(cors());
 
 // Routers
+// Block
 app.use('/api/block/monster', MonsterRouter.instance().router);
 app.use('/api/block/cr', ChallengeRatingRouter.instance().router);
 app.use('/api/block/size', SizeRouter.instance().router);
 app.use('/api/block/alignment', AlignmentRouter.instance().router);
+
+// Namia
+app.use('/api/namia/flash', FlashRouter.instance().router);
 
 // Error handling
 app.use(errorHandler); // Handle errors
