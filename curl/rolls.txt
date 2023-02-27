@@ -1,7 +1,0 @@
-{
-"rennyn": 1,
-"clasp": 2,
-"vehna": 3,
-"damon": 4,
-"rhys": 1
-}
