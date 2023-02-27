@@ -19,24 +19,27 @@ type ObjectValues<T> = T[keyof T];
 
 type Person = ObjectValues<typeof PEOPLE>;
 type Trauma = ObjectValues<typeof TRAUMA>;
-type traumaIndex = 1 | 2 | 3 | 4;
 
 const people: Person[] = Object.values(PEOPLE);
 const traumas: Trauma[] = Object.values(TRAUMA);
 
-export type Roll = { [key in Trauma]: traumaIndex }
+export type Rolls = { [key in Person]: number }
 
-const generateRoll
+const generateIncomingRolls = (): Rolls => {
+  return {
+    rennyn: randomInt(4) + 1,
+    clasp: randomInt(4) + 1,
+    vehna: randomInt(4) + 1,
+    damon: randomInt(4) + 1,
+    rhys: randomInt(4) + 1,
+  }
+}
 
-export const rollTrauma = (roll: Roll) => {
+export const rollTrauma = (incomingRolls?: Rolls) => {
   const rolls: Person[][] = [[], [], [], []]
-  people.forEach(person => {
-    const roll: number = randomInt(traumas.length);
-    rolls[roll]?.push(person);
-  });
+  Object.entries(incomingRolls || generateIncomingRolls())
+    .forEach(entry => rolls[entry[1] - 1]?.push(entry[0]));
   const sortedRolls: Person[][] = rolls.sort((n1, n2) => n2.length - n1.length);
-  console.log('Sorted Rolls: ' + JSON.stringify(sortedRolls, null, 4));
-
   return {
     'damon': sortedRolls[3],
     'rhys': sortedRolls[2],
