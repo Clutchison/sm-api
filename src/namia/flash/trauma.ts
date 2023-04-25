@@ -1,7 +1,7 @@
 const TRAUMA = {
   FARAH: 'farah',
   VEHNA: 'vehna',
-  RHYS: 'rhys',
+  RENNYN: 'rennyn',
   DAMON: 'damon',
 } as const;
 
@@ -42,7 +42,7 @@ export const rollTrauma = (incomingRolls?: Rolls) => {
   const sortedRolls: Person[][] = rolls.sort((n1, n2) => n2.length - n1.length);
   return {
     'damon': sortedRolls[3],
-    'rhys': sortedRolls[2],
+    'rennyn': sortedRolls[2],
     'vehna': sortedRolls[1],
     'farah': sortedRolls[0],
   };

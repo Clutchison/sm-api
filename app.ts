@@ -8,6 +8,8 @@ import { ChallengeRatingRouter } from './src/blocks/monster/challenge-rating/cha
 import { SizeRouter } from './src/blocks/size/size-router';
 import { AlignmentRouter } from './src/blocks/alignment/alignment-router';
 import { FlashRouter } from './src/namia/flash/flash-router';
+import { ItemRouter } from './src/namia/m5/item/item-router';
+import { PartyRouter } from './src/namia/m5/party/party-router';
 
 export const app = express();
 
@@ -25,6 +27,8 @@ app.use('/api/block/alignment', AlignmentRouter.instance().router);
 
 // Namia
 app.use('/api/namia/flash', FlashRouter.instance().router);
+app.use('/api/namia/m5/item', ItemRouter.instance().router);
+app.use('/api/namia/m5/party', PartyRouter.instance().router);
 
 // Error handling
 app.use(errorHandler); // Handle errors
