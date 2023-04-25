@@ -4,4 +4,5 @@ export const ItemRecord = Record({
   name: String,
   price: Number,
   url: String,
+  grouping: String,
 });

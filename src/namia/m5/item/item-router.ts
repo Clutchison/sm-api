@@ -8,11 +8,18 @@ import { MongoError } from 'mongodb';
 import 'express-async-errors';
 import { InvalidItemError } from '../../../blocks/errs/invalid-item-error';
 import InvalIdIdError from '../../../common/errs/InvalidIdError';
+import multer from 'multer';
+import { parse } from 'csv-parse';
+import * as fs from 'fs';
+import { parseItems } from './item';
+
 
 export class ItemRouter extends BaseRouter {
 
     public router: Router;
     private static _instance?: ItemRouter;
+
+    private static upload = multer({ dest: 'uploads/' });
 
     public static instance(): ItemRouter {
         if (!ItemRouter._instance) {
@@ -73,6 +80,19 @@ export class ItemRouter extends BaseRouter {
                     }
                 });
         });
+
+        // POST item/import
+        router.post("/import",
+            ItemRouter.upload.single('input'),
+            async (req: Request, res: Response) => {
+                console.log('In import');
+                const data = fs.readFileSync(
+                    req.file?.path || '',
+                    { encoding: 'utf8' });
+                parseItems(data);
+                const records: any = [];
+                res.status(200).send(records);
+            });
 
         // PUT items/:name
         router.put("/:name", async (req: Request, res: Response) => {
