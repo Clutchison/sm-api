@@ -3,7 +3,7 @@ import 'express-async-errors';
 import { Error as MongooseError } from 'mongoose';
 import { BaseRouter } from '../../../common/base-router';
 import { ValidationError as RunTypesError } from 'runtypes';
-import itemService from './item-service';
+import itemService, { ItemFilters } from './item-service';
 import { MongoError } from 'mongodb';
 import 'express-async-errors';
 import { InvalidItemError } from '../../../blocks/errs/invalid-item-error';
@@ -30,11 +30,33 @@ export class ItemRouter extends BaseRouter {
         this.router = this.initRouter();
     }
 
+    private static mapToFilters = (qs: any): ItemFilters => {
+        const filters: ItemFilters = {};
+
+        // Name
+        if (!!qs.name) filters.name = qs.name;
+
+        // Price
+        if (!!qs.price) {
+            filters.price = qs.price;
+        } else if (!!qs.priceGreaterThan || !!qs.priceLessThan) {
+            filters.price = {};
+            if (!!qs.priceGreaterThan) filters.price.$gt = qs.priceGreaterThan;
+            if (!!qs.priceLessThan) filters.price.$lte = qs.priceLessThan;
+        }
+
+        // Grouping
+        if (!!qs.grouping) filters.grouping = qs.grouping;
+
+        console.log(filters);
+        return filters;
+    }
+
     private initRouter = (): Router => {
         const router = express.Router();
         // GET items
         router.get("/", async (req: Request, res: Response) => {
-            itemService.getAll(req.query)
+            itemService.getAll(ItemRouter.mapToFilters(req.query))
                 .then(items => res.status(200).send(items))
                 .catch((e: unknown) => ItemRouter.send500(res, e instanceof Error ? e.message : undefined));
         });

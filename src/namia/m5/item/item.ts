@@ -9,7 +9,6 @@ export type Item = {
     grouping: ItemGroup;
 }
 
-
 export interface ItemDoc extends mongoose.Document, Item {
     _doc: ItemDoc;
 }
@@ -18,6 +17,12 @@ interface ItemModelInterface extends mongoose.Model<ItemDoc> {
     record: typeof ItemRecord;
     build(item: Item): ItemDoc;
     buildAll(items: Item[]): ItemDoc[];
+}
+
+export type ItemFilter = {
+    name?: string,
+    price?: number | { $gte ?: number, $lt ?: number },
+    group?: ItemGroup
 }
 
 const itemSchema = new mongoose.Schema({

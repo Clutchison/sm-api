@@ -6,6 +6,14 @@ type ItemDocWithId = (ItemDoc & {
     _id: Types.ObjectId;
 });
 
+export type NumberFilter = { $gt?: number, $lte?: number }
+
+export type ItemFilters = {
+    name?: string,
+    price?: number | NumberFilter,
+    grouping?: ItemGroup | ItemGroup[]
+}
+
 const create = async (newItem: Item): Promise<ItemDoc> => {
     // const checked = ItemModel.record.check(newItem);
     const built = ItemModel.build(newItem);
@@ -29,10 +37,10 @@ const parseItems = (data: string): Item[] => {
                 url: '',
                 grouping,
             };
-        }).filter(i => i.name !== '');
+        }).filter(i => !!i.name);
 }
 
-const getAll = async (filters: Item): Promise<ItemDocWithId[]> => {
+const getAll = async (filters: ItemFilters): Promise<ItemDocWithId[]> => {
     return filters ? ItemModel.find(filters) : ItemModel.find();
 }
 
