@@ -6,6 +6,7 @@ export const ITEM_GROUP = {
     NON_COMBAT: 'Noncombat',
     SUMMONING: 'Summoning',
     GAME_CHANGING: 'Gamechanging',
+    UNGROUPED: 'Ungrouped',
 } as const;
 
 export type ItemGroup = ObjectValues<typeof ITEM_GROUP>;

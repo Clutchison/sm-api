@@ -9,10 +9,7 @@ import 'express-async-errors';
 import { InvalidItemError } from '../../../blocks/errs/invalid-item-error';
 import InvalIdIdError from '../../../common/errs/InvalidIdError';
 import multer from 'multer';
-import { parse } from 'csv-parse';
 import * as fs from 'fs';
-import { parseItems } from './item';
-
 
 export class ItemRouter extends BaseRouter {
 
@@ -36,8 +33,8 @@ export class ItemRouter extends BaseRouter {
     private initRouter = (): Router => {
         const router = express.Router();
         // GET items
-        router.get("/", async (_, res: Response) => {
-            itemService.getAll()
+        router.get("/", async (req: Request, res: Response) => {
+            itemService.getAll(req.query)
                 .then(items => res.status(200).send(items))
                 .catch((e: unknown) => ItemRouter.send500(res, e instanceof Error ? e.message : undefined));
         });
@@ -89,7 +86,7 @@ export class ItemRouter extends BaseRouter {
                 const data = fs.readFileSync(
                     req.file?.path || '',
                     { encoding: 'utf8' });
-                parseItems(data);
+                itemService.createAll(itemService.parseItems(data));
                 const records: any = [];
                 res.status(200).send(records);
             });

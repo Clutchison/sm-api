@@ -13,25 +13,27 @@ const create = async (newItem: Item): Promise<ItemDoc> => {
     return saved;
 }
 
-const createAll = async (newItems: Item[]) => {
+const createAll = async (newItems: Item[]): Promise<ItemDoc[]> => {
+    return ItemModel.create(newItems);
 }
 
 const parseItems = (data: string): Item[] => {
     return data.split('\n')
         .map(line => {
-            const split = line.split(';');
-            const grouping: ItemGroup = Object.values(ITEM_GROUP).includes(lin
+            const split = line.trim().split(';');
+            const grouping: ItemGroup = Object.values(ITEM_GROUP)
+                .find(s => split[2] === s) || 'Ungrouped';
             return {
                 name: split[0] || '',
-                price: split[1] || '',
+                price: Number.parseInt(split[1] || ''),
                 url: '',
-                grouping: split[2] || '',
+                grouping,
             };
-        });
+        }).filter(i => i.name !== '');
 }
 
-const getAll = async (): Promise<ItemDocWithId[]> => {
-    return ItemModel.find();
+const getAll = async (filters: Item): Promise<ItemDocWithId[]> => {
+    return filters ? ItemModel.find(filters) : ItemModel.find();
 }
 
 const getByName = async (name: string | undefined): Promise<ItemDocWithId | null> => {
@@ -60,6 +62,7 @@ const deleteByName = async (name: string | undefined): Promise<ItemDocWithId | n
 
 export default {
     create,
+    createAll,
     parseItems,
     getAll,
     getByName,

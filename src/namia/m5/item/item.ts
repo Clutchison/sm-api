@@ -17,6 +17,7 @@ export interface ItemDoc extends mongoose.Document, Item {
 interface ItemModelInterface extends mongoose.Model<ItemDoc> {
     record: typeof ItemRecord;
     build(item: Item): ItemDoc;
+    buildAll(items: Item[]): ItemDoc[];
 }
 
 const itemSchema = new mongoose.Schema({
@@ -32,7 +33,7 @@ const itemSchema = new mongoose.Schema({
     },
     url: {
         type: String,
-        required: true,
+        required: false,
         unique: false,
     },
     grouping: {
@@ -44,5 +45,6 @@ const itemSchema = new mongoose.Schema({
 }, { optimisticConcurrency: true });
 
 itemSchema.statics.build = (attr: Item) => { return new ItemModel(attr) };
+itemSchema.statics.buildAll = (attrs: Item[]) => { return attrs.map(attr => new ItemModel(attr)) };
 export const ItemModel = mongoose.model<ItemDoc, ItemModelInterface>('item', itemSchema);
 ItemModel.record = ItemRecord;
