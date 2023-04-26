@@ -35,6 +35,8 @@ export class ItemRouter extends BaseRouter {
 
         // Name
         if (!!qs.name) filters.name = qs.name;
+        else if (!!qs.nameContains)
+            filters.name = new RegExp(qs.nameContains, 'g');
 
         // Price
         if (!!qs.price) {

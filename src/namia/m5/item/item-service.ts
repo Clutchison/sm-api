@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { NumberFilter } from '../../../common/util/object-values';
 import { Item, ItemDoc, ItemModel } from './item';
 import { ItemGroup, ITEM_GROUP } from './item-group';
 
@@ -6,10 +7,8 @@ type ItemDocWithId = (ItemDoc & {
     _id: Types.ObjectId;
 });
 
-export type NumberFilter = { $gt?: number, $lte?: number }
-
 export type ItemFilters = {
-    name?: string,
+    name?: string | RegExp,
     price?: number | NumberFilter,
     grouping?: ItemGroup | ItemGroup[]
 }

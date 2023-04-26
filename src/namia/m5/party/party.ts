@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { PartyRecord } from "./party-record";
-
-const BASE_FEE = 200;
+import partyConfig from "./party-config";
 
 export type Party = {
     fee: number;
@@ -22,7 +21,7 @@ const partySchema = new mongoose.Schema({
     fee: {
         type: Number,
         required: true,
-        default: BASE_FEE,
+        default: partyConfig.BASE_FEE,
     },
     daysUntilDue: {
         type: Number,
