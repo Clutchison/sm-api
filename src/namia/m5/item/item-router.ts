@@ -50,7 +50,6 @@ export class ItemRouter extends BaseRouter {
         // Grouping
         if (!!qs.grouping) filters.grouping = qs.grouping;
 
-        console.log(filters);
         return filters;
     }
 
@@ -106,13 +105,12 @@ export class ItemRouter extends BaseRouter {
         router.post("/import",
             ItemRouter.upload.single('input'),
             async (req: Request, res: Response) => {
-                console.log('In import');
                 const data = fs.readFileSync(
                     req.file?.path || '',
                     { encoding: 'utf8' });
-                itemService.createAll(itemService.parseItems(data));
-                const records: any = [];
-                res.status(200).send(records);
+                itemService.deleteImported()
+                    .then(_ => itemService.createAll(itemService.parseItems(data))
+                        .then(records => res.status(200).send(records)));
             });
 
         // PUT items/:name

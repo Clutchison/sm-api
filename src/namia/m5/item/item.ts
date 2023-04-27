@@ -7,6 +7,7 @@ export type Item = {
     price: number;
     url: string;
     grouping: ItemGroup;
+    imported?: boolean;
 }
 
 export interface ItemDoc extends mongoose.Document, Item {
@@ -34,18 +35,20 @@ const itemSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: true,
-        unique: false,
     },
     url: {
         type: String,
         required: false,
-        unique: false,
     },
     grouping: {
         type: String,
         required: true,
         enum: Object.values(ITEM_GROUP),
-        unique: false,
+    },
+    imported: {
+        type: Boolean,
+        required: false,
+        default: false,
     },
 }, { optimisticConcurrency: true });
 

@@ -1,3 +1,4 @@
+import { DeleteResult } from 'mongodb';
 import { Types } from 'mongoose';
 import { NumberFilter } from '../../../common/util/object-values';
 import { Item, ItemDoc, ItemModel } from './item';
@@ -35,6 +36,7 @@ const parseItems = (data: string): Item[] => {
                 price: Number.parseInt(split[1] || ''),
                 url: '',
                 grouping,
+                imported: true,
             };
         }).filter(i => !!i.name);
 }
@@ -67,6 +69,8 @@ const deleteByName = async (name: string | undefined): Promise<ItemDocWithId | n
     return item ? item.delete() : null;
 }
 
+const deleteImported = async (): Promise<DeleteResult> => ItemModel.deleteMany({ imported: true })
+
 export default {
     create,
     createAll,
@@ -75,4 +79,5 @@ export default {
     getByName,
     update,
     deleteByName,
+    deleteImported,
 };
