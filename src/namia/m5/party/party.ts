@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
 import { PartyRecord } from "./party-record";
 import partyConfig from "./party-config";
+import { Contents } from "./contents/contents";
 
 export type Party = {
     fee: number;
     daysUntilDue: number;
     active: boolean;
+    contents?: Contents[];
 }
 
 export interface PartyDoc extends mongoose.Document, Party {
@@ -34,6 +36,8 @@ const partySchema = new mongoose.Schema({
         required: true,
         default: true,
     },
+    contents: [{
+
 }, { optimisticConcurrency: true });
 
 partySchema.statics.build = (attr: Party) => { return new PartyModel(attr) };
