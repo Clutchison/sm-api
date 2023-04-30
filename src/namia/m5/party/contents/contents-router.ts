@@ -1,9 +1,13 @@
 import express, { Request, Response, Router } from 'express';
+import { MongoError } from 'mongodb';
+import { ValidationError as RunTypesError } from 'runtypes';
 import 'express-async-errors';
 import contentsService from './contents-service';
 import 'express-async-errors';
 import { BaseRouter } from '../../../../common/base-router';
 import InvalIdIdError from '../../../../common/errs/InvalidIdError';
+import { MongooseError } from 'mongoose';
+import { InvalidItemError } from '../../../../blocks/errs/invalid-item-error';
 
 export class ContentsRouter extends BaseRouter {
 
@@ -45,6 +49,13 @@ export class ContentsRouter extends BaseRouter {
                         ContentsRouter.send500(res, e instanceof Error ? e.message : undefined)
                     }
                 });
+        });
+
+        // POST contents/
+        router.post("/", async (req: Request, res: Response) => {
+            contentsService.generate()
+                .then(item => res.status(201).json(item))
+                .catch((e: unknown) => console.log(e));
         });
         return router;
     }

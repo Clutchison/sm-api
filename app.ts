@@ -10,6 +10,7 @@ import { AlignmentRouter } from './src/blocks/alignment/alignment-router';
 import { FlashRouter } from './src/namia/flash/flash-router';
 import { ItemRouter } from './src/namia/m5/item/item-router';
 import { PartyRouter } from './src/namia/m5/party/party-router';
+import { ContentsRouter } from './src/namia/m5/party/contents/contents-router';
 
 export const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/block/alignment', AlignmentRouter.instance().router);
 // Namia
 app.use('/api/namia/flash', FlashRouter.instance().router);
 app.use('/api/namia/m5/item', ItemRouter.instance().router);
+app.use('/api/namia/m5/contents', ContentsRouter.instance().router);
 app.use('/api/namia/m5/party', PartyRouter.instance().router);
 
 // Error handling

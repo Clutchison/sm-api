@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { PartyRecord } from "./party-record";
 import partyConfig from "./party-config";
-import { Contents } from "./contents/contents";
+import { Contents, contentsSchema } from "./contents/contents";
 
 export type Party = {
     fee: number;
@@ -36,8 +36,7 @@ const partySchema = new mongoose.Schema({
         required: true,
         default: true,
     },
-    contents: [{
-
+    contents: [contentsSchema],
 }, { optimisticConcurrency: true });
 
 partySchema.statics.build = (attr: Party) => { return new PartyModel(attr) };

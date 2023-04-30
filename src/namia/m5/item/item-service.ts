@@ -4,7 +4,7 @@ import { NumberFilter } from '../../../common/util/object-values';
 import { Item, ItemDoc, ItemModel } from './item';
 import { ItemGroup, ITEM_GROUP } from './item-group';
 
-type ItemDocWithId = (ItemDoc & {
+export type ItemDocWithId = (ItemDoc & {
     _id: Types.ObjectId;
 });
 
@@ -14,16 +14,11 @@ export type ItemFilters = {
     grouping?: ItemGroup | ItemGroup[]
 }
 
-const create = async (newItem: Item): Promise<ItemDoc> => {
-    // const checked = ItemModel.record.check(newItem);
-    const built = ItemModel.build(newItem);
-    const saved = built.save();
-    return saved;
-}
+const create = async (newItem: Item): Promise<ItemDoc> =>
+    ItemModel.build(newItem).save();
 
-const createAll = async (newItems: Item[]): Promise<ItemDoc[]> => {
-    return ItemModel.create(newItems);
-}
+const createAll = async (newItems: Item[]): Promise<ItemDoc[]> =>
+    ItemModel.create(newItems);
 
 const parseItems = (data: string): Item[] => {
     return data.split('\n')
@@ -41,13 +36,18 @@ const parseItems = (data: string): Item[] => {
         }).filter(i => !!i.name);
 }
 
-const getAll = async (filters: ItemFilters): Promise<ItemDocWithId[]> => {
-    return filters ? ItemModel.find(filters) : ItemModel.find();
-}
+const getAll = async (filters: ItemFilters): Promise<ItemDocWithId[]> =>
+    filters ? ItemModel.find(filters) : ItemModel.find();
 
-const getByName = async (name: string | undefined): Promise<ItemDocWithId | null> => {
-    return ItemModel.findOne({ name });
-}
+
+const getRandomItems = (filters: ItemFilters, limit: number) =>
+    ItemModel.aggregate([
+        { $match: filters },
+        { $sample: { size: limit } }
+    ]);
+
+const getByName = async (name: string | undefined): Promise<ItemDocWithId | null> =>
+    ItemModel.findOne({ name });
 
 const update = async (updatedItem: Item, name: string | undefined):
     Promise<ItemDocWithId | null> => {
@@ -69,7 +69,8 @@ const deleteByName = async (name: string | undefined): Promise<ItemDocWithId | n
     return item ? item.delete() : null;
 }
 
-const deleteImported = async (): Promise<DeleteResult> => ItemModel.deleteMany({ imported: true })
+const deleteImported = async (): Promise<DeleteResult> =>
+    ItemModel.deleteMany({ imported: true })
 
 export default {
     create,
@@ -77,6 +78,7 @@ export default {
     parseItems,
     getAll,
     getByName,
+    getRandomItems,
     update,
     deleteByName,
     deleteImported,
