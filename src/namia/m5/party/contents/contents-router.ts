@@ -51,8 +51,15 @@ export class ContentsRouter extends BaseRouter {
                 });
         });
 
+        // GET contents
+        router.get("/", async (_: Request, res: Response) => {
+            contentsService.getAll()
+                .then(contents => res.status(200).send(contents))
+                .catch((e: unknown) => ContentsRouter.send500(res, e instanceof Error ? e.message : undefined));
+        });
+
         // POST contents/
-        router.post("/", async (req: Request, res: Response) => {
+        router.post("/", async (_: Request, res: Response) => {
             contentsService.generate()
                 .then(item => res.status(201).json(item))
                 .catch((e: unknown) => console.log(e));

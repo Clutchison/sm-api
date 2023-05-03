@@ -20,11 +20,11 @@ interface ItemModelInterface extends mongoose.Model<ItemDoc> {
     buildAll(items: Item[]): ItemDoc[];
 }
 
-export type ItemFilter = {
-    name?: string,
-    price?: number | { $gte ?: number, $lt ?: number },
-    group?: ItemGroup
-}
+// export type ItemQueryFilters = {
+//     name?: string,
+//     price?: number | { $gte ?: number, $lt ?: number },
+//     group?: ItemGroup
+// }
 
 const itemSchema = new mongoose.Schema({
     name: {

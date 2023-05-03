@@ -1,4 +1,4 @@
-import { DeleteResult } from 'mongodb';
+import { DeleteResult, ObjectId } from 'mongodb';
 import { Types } from 'mongoose';
 import { NumberFilter } from '../../../common/util/object-values';
 import { Item, ItemDoc, ItemModel } from './item';
@@ -9,9 +9,11 @@ export type ItemDocWithId = (ItemDoc & {
 });
 
 export type ItemFilters = {
+    _id?: ObjectId | { $in: ObjectId[] },
     name?: string | RegExp,
     price?: number | NumberFilter,
-    grouping?: ItemGroup | ItemGroup[]
+    grouping?: ItemGroup | ItemGroup[],
+    $nor?: ItemFilters[];
 }
 
 const create = async (newItem: Item): Promise<ItemDoc> =>
@@ -38,7 +40,6 @@ const parseItems = (data: string): Item[] => {
 
 const getAll = async (filters: ItemFilters): Promise<ItemDocWithId[]> =>
     filters ? ItemModel.find(filters) : ItemModel.find();
-
 
 const getRandomItems = (filters: ItemFilters, limit: number) =>
     ItemModel.aggregate([
